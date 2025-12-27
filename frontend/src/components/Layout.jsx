@@ -1,32 +1,33 @@
 import Sidebar from './Sidebar';
-import { Bell, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import Chatbot from './Chatbot';
+import { useSimulation } from '../context/SimulationContext';
 
 export default function Layout({ children, title }) {
-    const navigate = useNavigate();
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
-    }
+    const { isSimulating, setIsSimulating } = useSimulation();
 
     return (
-        <div className="flex h-screen bg-background font-sans">
+        <div className={`flex h-screen bg-background ${isSimulating ? 'border-4 border-amber-400' : ''}`}>
             <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="h-16 bg-surface border-b border-slate-200 flex items-center justify-between px-8 shadow-sm">
-                    <h1 className="text-xl font-bold text-primary">{title}</h1>
-                    <div className="flex items-center space-x-6">
-                        <button className="relative p-2 rounded-full hover:bg-slate-100 transition">
-                            <Bell className="h-5 w-5 text-secondary" />
-                            <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-                        </button>
-                        <div onClick={handleLogout} className="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-slate-100 transition">
-                            <div className="h-8 w-8 bg-accent rounded-full flex items-center justify-center text-white font-bold">
-                                A
+            <div className="flex-1 flex flex-col overflow-hidden relative">
+
+                {/* Simulation Mode Banner */}
+                {isSimulating && (
+                    <div className="bg-amber-400 text-amber-900 px-4 py-1 text-xs font-bold text-center uppercase tracking-widest flex justify-between items-center">
+                        <span>⚠️ MODO SIMULAÇÃO ATIVO - Nenhuma ação será aplicada</span>
+                        <button onClick={() => setIsSimulating(false)} className="underline hover:text-black">Sair</button>
+                    </div>
+                )}
+
+                <header className="bg-surface border-b border-slate-200">
+                    <div className="flex items-center justify-between px-8 py-4">
+                        <h1 className="text-2xl font-bold text-primary">{title}</h1>
+                        <div className="flex items-center space-x-4">
+                            <div className="flex flex-col text-right hidden md:block">
+                                <span className="text-sm font-bold text-primary">Admin User</span>
+                                <span className="text-xs text-secondary">Logistics Manager</span>
                             </div>
-                            <div className="hidden md:block">
-                                <p className="text-sm font-medium text-primary">Admin User</p>
-                                <p className="text-xs text-secondary">Logistics Manager</p>
+                            <div className="h-10 w-10 rounded-full bg-accent text-white flex items-center justify-center font-bold">
+                                A
                             </div>
                         </div>
                     </div>

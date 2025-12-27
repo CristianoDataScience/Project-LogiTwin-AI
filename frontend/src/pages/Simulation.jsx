@@ -2,12 +2,14 @@ import { useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api';
 import { CloudRain, AlertTriangle, ArrowRight } from 'lucide-react';
+import { useSimulation } from '../context/SimulationContext';
 
 export default function Simulation() {
     const [weather, setWeather] = useState('clear');
     const [traffic, setTraffic] = useState(1.0);
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState(null);
+    const { setIsSimulating } = useSimulation();
 
     const runSimulation = async () => {
         setLoading(true);
@@ -40,8 +42,8 @@ export default function Simulation() {
                                         key={w}
                                         onClick={() => setWeather(w === 'Claro' ? 'clear' : w === 'Chuva' ? 'rain' : 'storm')}
                                         className={`p-3 rounded-lg border capitalize ${(weather === 'clear' && w === 'Claro') || (weather === 'rain' && w === 'Chuva') || (weather === 'storm' && w === 'Tempestade')
-                                                ? 'bg-accent text-white border-accent'
-                                                : 'bg-white text-secondary border-slate-200 hover:bg-slate-50'
+                                            ? 'bg-accent text-white border-accent'
+                                            : 'bg-white text-secondary border-slate-200 hover:bg-slate-50'
                                             }`}
                                     >
                                         {w}
@@ -70,16 +72,48 @@ export default function Simulation() {
                         </div>
 
                         <button
-                            onClick={runSimulation}
+                            onClick={() => {
+                                setIsSimulating(true);
+                                runSimulation();
+                            }}
                             disabled={loading}
                             className={`w-full py-3 rounded-lg flex items-center justify-center space-x-2 text-white font-bold transition ${loading ? 'bg-slate-400' : 'bg-primary hover:bg-slate-800'
                                 }`}
                         >
                             <CloudRain className="h-5 w-5" />
-                            <span>{loading ? 'Simulando...' : 'Executar Simulação'}</span>
+                            <span>{loading ? 'Simulando...' : 'Entrar em Modo Simulação IA'}</span>
                         </button>
                     </div>
                 </div>
+
+                {/* Timeline */}
+                {results && (
+                    <div className="bg-surface p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
+                        <h2 className="text-lg font-bold text-primary mb-4">⏱️ Linha do Tempo da Crise (Simulação)</h2>
+                        <div className="relative border-l-2 border-indigo-100 ml-4 space-y-6 pb-2">
+                            <div className="relative pl-6">
+                                <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-indigo-500 ring-4 ring-white"></span>
+                                <p className="text-xs text-indigo-500 font-bold">AGORA (+5 min)</p>
+                                <p className="text-sm font-medium text-slate-800">IA detecta aumento repentino de tráfego</p>
+                            </div>
+                            <div className="relative pl-6">
+                                <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-red-500 ring-4 ring-white"></span>
+                                <p className="text-xs text-red-500 font-bold">+15 min</p>
+                                <p className="text-sm font-medium text-slate-800">Previsão de gargalo no CD São Paulo (Capacidade &gt; 90%)</p>
+                            </div>
+                            <div className="relative pl-6">
+                                <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-amber-500 ring-4 ring-white"></span>
+                                <p className="text-xs text-amber-500 font-bold">+30 min</p>
+                                <p className="text-sm font-medium text-slate-800">Atraso na Rota 4B excede o limite contratual</p>
+                            </div>
+                            <div className="relative pl-6">
+                                <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-green-500 ring-4 ring-white"></span>
+                                <p className="text-xs text-green-500 font-bold">SOLUÇÃO PREVISTA (+35 min)</p>
+                                <p className="text-sm font-medium text-slate-800">Aplicação automática de rota alternativa normaliza o fluxo.</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Results */}
                 <div className="bg-surface p-6 rounded-xl shadow-sm border border-slate-200">

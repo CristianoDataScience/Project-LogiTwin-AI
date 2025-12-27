@@ -27,10 +27,22 @@ def populate_db(db: Session):
 
     # Routes (Simple mesh)
     routes = []
-    # SP -> RJ
-    routes.append(models.Route(origin_id=cds[0].id, destination_id=cds[1].id, distance_km=430, estimated_time_min=300, waypoints=[[-23.55,-46.63], [-23.0,-45.0], [-22.90,-43.17]]))
+    # SP -> RJ (Waypoints via SJC e Resende para evitar o mar)
+    routes.append(models.Route(
+        origin_id=cds[0].id, 
+        destination_id=cds[1].id, 
+        distance_km=430, 
+        estimated_time_min=300, 
+        waypoints=[[-23.55,-46.63], [-23.18, -45.88], [-22.47, -44.45], [-22.90,-43.17]]
+    ))
     # RJ -> SP
-    routes.append(models.Route(origin_id=cds[1].id, destination_id=cds[0].id, distance_km=430, estimated_time_min=300, waypoints=[[-22.90,-43.17], [-23.0,-45.0], [-23.55,-46.63]]))
+    routes.append(models.Route(
+        origin_id=cds[1].id, 
+        destination_id=cds[0].id, 
+        distance_km=430, 
+        estimated_time_min=300, 
+        waypoints=[[-22.90,-43.17], [-22.47, -44.45], [-23.18, -45.88], [-23.55,-46.63]]
+    ))
     # SP -> Campinas
     routes.append(models.Route(origin_id=cds[0].id, destination_id=cds[2].id, distance_km=90, estimated_time_min=60, waypoints=[[-23.55,-46.63], [-22.90,-47.06]]))
     
@@ -38,24 +50,24 @@ def populate_db(db: Session):
     db.commit()
     for r in routes: db.refresh(r)
 
-    # Trucks - STATUS IN PORTUGUESE
-    trucks = []
+    # Generate Mock Trucks
+    # Coordinates for SP inland (avoiding sea)
+    # Inland Lat: -23.4 to -22.0
+    # Inland Lng: -47.5 to -45.5
+    truck_objs = []
     for i in range(10):
-        status = random.choice(["PARADO", "EM TRÂNSITO", "MANUTENÇÃO"]) # Translated
-        lat = random.uniform(-24.0, -22.0)
-        lng = random.uniform(-47.0, -43.0)
         t = models.Truck(
-            license_plate=fake.license_plate(),
-            status=status,
-            location_lat=lat,
-            location_lng=lng,
-            capacity=100,
+            license_plate=f"TRK-{random.randint(100, 999)}",
+            status=random.choice(["PARADO", "EM TRÂNSITO", "MANUTENÇÃO"]), # Translated
+            location_lat=random.uniform(-23.4, -22.5),
+            location_lng=random.uniform(-47.5, -45.5), 
+            capacity=1000,
             current_load=random.randint(0, 100)
         )
-        if status == "EM TRÂNSITO":
+        if t.status == "EM TRÂNSITO" and routes:
             t.current_route_id = random.choice(routes).id
-        trucks.append(t)
-    db.add_all(trucks)
+        truck_objs.append(t)
+    db.add_all(truck_objs)
     
     # Orders
     orders = []

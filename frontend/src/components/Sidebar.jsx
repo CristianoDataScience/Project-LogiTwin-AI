@@ -1,10 +1,12 @@
+
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Truck, Map as MapIcon, Package, PlayCircle, Settings } from 'lucide-react';
+import { LayoutDashboard, Truck, Map as MapIcon, Package, PlayCircle, Settings, Users } from 'lucide-react';
 
 const navItems = [
     { name: 'Visão Geral', path: '/', icon: LayoutDashboard },
     { name: 'Rotas', path: '/routes', icon: MapIcon },
     { name: 'Frota', path: '/fleet', icon: Truck },
+    { name: 'Cadastros', path: '/registration', icon: Users },
     { name: 'Pedidos', path: '/orders', icon: Package },
     { name: 'Simulação', path: '/simulation', icon: PlayCircle },
 ];
@@ -44,6 +46,7 @@ export default function Sidebar() {
                     <span className="font-medium">Configurações</span>
                 </button>
             </div>
-        </div>
+        </div >
     );
 }
+

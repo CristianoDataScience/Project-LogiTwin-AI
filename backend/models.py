@@ -57,3 +57,12 @@ class Simulation(Base):
     parameters = Column(JSON) # {"traffic_factor": 1.2, "weather": "rain"}
     results = Column(JSON) # {"delayed_trucks": [...], "new_kpis": {...}}
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class Driver(Base):
+    __tablename__ = "drivers"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    cnh = Column(String, unique=True, nullable=True) # Optional for non-drivers
+    role = Column(String, default="Motorista") # Motorista, Operador, Gerente
+    status = Column(String, default="AVAILABLE") # AVAILABLE, BUSY
+

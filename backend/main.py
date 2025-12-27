@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from . import models, database, auth, operations, simulation
+from . import models, database, auth, operations, simulation, chat
 from .database import engine, SessionLocal
 from . import mock_data
 from dotenv import load_dotenv
@@ -26,6 +26,7 @@ app.add_middleware(
 
 app.include_router(operations.router)
 app.include_router(simulation.router)
+app.include_router(chat.router)
 
 @app.on_event("startup")
 def startup_event():
